@@ -27,8 +27,14 @@ app.all('*',(req, res) => {
     }
 
     res.end();
-})
+});
+
+app.use((err, req, res, next) => {
+    console.log(err);
+    res.sendFile(path.join(__dirname, "/views", "/404.html"));
+    res.end();
+});
 
 app.listen(process.env.PORT | 3000, () => {
     console.log(`App is listening on http://localhost:${process.env.PORT | 3000}`);
-})
+});

@@ -5,7 +5,9 @@ const states = require('../model/states.json');
 
 const checkCode = (req, res, next) => {
     const code = req.params.state;
+    console.log("middleware");
     if (!states.find((s) => s.code == code)) {
+        console.log(`State ${code} not found`);
         console.log("here");
         res.status(404);
         res.end();
@@ -31,19 +33,16 @@ router.get("/", (req, res) => {
     res.end();
 });
 
-router.use("/:state", checkCode)
-    .get("/", (req, res) => {
-        const stateCode = req.params.state;
-        const foundState = states.find((s) => s.code == stateCode);
-        console.log("here");
-        if (foundState == undefined) {
-            res.status(404);
-        }
-        else {
-            res.json(foundState);
-        }
-        res.end();
-    });
-
+router.get("/:state", checkCode, (req, res) => {
+    const stateCode = req.params.state;
+    const foundState = states.find((s) => s.code == stateCode);
+    if (foundState == undefined) {
+        res.status(404);
+    }
+    else {
+        res.json(foundState);
+    }
+    res.end();
+});
 
 module.exports = router;
