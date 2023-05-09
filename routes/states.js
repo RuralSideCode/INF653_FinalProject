@@ -5,10 +5,8 @@ const states = require('../model/states.json');
 
 const checkCode = (req, res, next) => {
     const code = req.params.state;
-    console.log("middleware");
     if (!states.find((s) => s.code == code)) {
         console.log(`State ${code} not found`);
-        console.log("here");
         res.status(404);
         res.end();
 
@@ -42,6 +40,42 @@ router.get("/:state", checkCode, (req, res) => {
     else {
         res.json(foundState);
     }
+    res.end();
+});
+
+router.get("/:state/funfact", checkCode, (req, res) => {
+
+});
+
+router.get("/:state/capital", checkCode, (req, res) => {
+    const code = req.params.state;
+    const stateObject = states.find((s) => s.code == code);
+
+    res.json({state: stateObject.state, capital: stateObject.capital_city});
+    res.end();
+});
+
+router.get("/:state/nickname", checkCode, (req, res) => {
+    const code = req.params.state;
+    const stateObject = states.find((s) => s.code == code);
+
+    res.json({state: stateObject.state, nickname: stateObject.nickname});
+    res.end();
+});
+
+router.get("/:state/population", checkCode, (req, res) => {
+    const code = req.params.state;
+    const stateObject = states.find((s) => s.code == code);
+
+    res.json({state: stateObject.state, population: stateObject.population});
+    res.end();
+});
+
+router.get("/:state/admission", checkCode, (req, res) => {
+    const code = req.params.state;
+    const stateObject = states.find((s) => s.code == code);
+
+    res.json({state: stateObject.state, admitted: stateObject.admission_date});
     res.end();
 });
 
