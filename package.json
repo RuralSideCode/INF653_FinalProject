@@ -1,0 +1,1 @@
+{"name":"final-project","version":"1.0.0","description":"","main":"index.js","scripts":{"start":"node ./server.js"},"author":"Hunter Moore","license":"ISC","dependencies":{"dotenv":"^16.0.3","express":"^4.18.2","fs":"^0.0.1-security","mongoose":"^7.1.0","path":"^0.12.7"}}
