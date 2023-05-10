@@ -29,7 +29,6 @@ async function postFunfact(stateCode, funfacts) {
 
 async function patchFunfact(stateCode, index, funfact) {
     const state = await States.findOne({code: stateCode});
-    console.log(state);
 
     // If the index is out the the bounds of the funfacts array, then do nothing
     if (index < 0 || index - 1 > state.funfacts.length) {
@@ -41,4 +40,19 @@ async function patchFunfact(stateCode, index, funfact) {
     return stateUpdate;
 }
 
-module.exports = {getFunfacts, postFunfact, patchFunfact};
+async function removeFunfact(stateCode, index) {
+    const state = await States.findOne({code: stateCode});
+    if (state == undefined) {
+        return;
+    }
+
+    if (index < 0 || index - 1 > state.funfacts.length) {
+        return;
+    }
+
+    state.funfacts.splice(index - 1, 1);
+    const stateUpdate = States.findOneAndUpdate({code: stateCode}, state, {new: true});
+    return stateUpdate;
+}
+
+module.exports = {getFunfacts, postFunfact, patchFunfact, removeFunfact};

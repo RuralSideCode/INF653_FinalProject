@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const states = require('../model/states.json');
 
-const {getFunfacts, postFunfact, patchFunfact} = require("../model/funfacts");
+const {getFunfacts, postFunfact, patchFunfact, removeFunfact} = require("../model/funfacts");
 
 const checkCode = (req, res, next) => {
     const code = req.params.state;
@@ -17,7 +17,7 @@ const checkCode = (req, res, next) => {
     next();
 }
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
     const contig = req.query.contig; 
 
     let allStates = [];
@@ -29,31 +29,36 @@ router.get("/", (req, res) => {
         allStates = states.filter((s) => s.code === "AK" || s.code === "HI");
     }
 
-    allStates = allStates.map((s) => {
-        const funfacts = getFunfact(s.code);
+    allStates = await Promise.all(allStates.map(async (s) => {
+        const funfacts = await getFunfacts(s.code);
         if (funfacts == undefined) return s;
 
         if (s.funfacts == undefined) {
             s.funfacts = [];
         }
 
-        s.funfacts.push(funfacts);
+        s.funfacts = funfacts;
         return s;
-    });
+    }));
 
     res.json(allStates);
     res.end();
 });
 
-router.get("/:state", checkCode, (req, res) => {
+router.get("/:state", checkCode, async (req, res) => {
     const stateCode = req.params.state;
     const foundState = states.find((s) => s.code == stateCode);
     if (foundState == undefined) {
         res.status(404);
     }
     else {
+        const funfacts = await getFunfacts(stateCode);
+        if (foundState.funfacts == undefined && funfacts.length != 0) foundState.funfacts = funfacts;
+        else if (foundState.funfacts != undefined) foundState.funfacts.push(...funfacts);
+
         res.json(foundState);
     }
+
     res.end();
 });
 
@@ -132,8 +137,13 @@ router.patch("/:state/funfact", checkCode, async (req, res) => {
     res.end();
 });
 
-router.delete("/:state/funfact", checkCode, (req, res) => {
+router.delete("/:state/funfact", checkCode, async (req, res) => {
+    const stateCode = req.params.state;
+    const index = req.body.index;
+    console.log(await removeFunfact(stateCode, index));
 
+    res.status(200);
+    res.end();
 });
 
 module.exports = router;
