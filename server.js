@@ -1,12 +1,14 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
+const db = require('./model/db');
+const statesRouter = require('./routes/states');
 
 require('dotenv').config();
 
-const statesRouter = require('./routes/states');
-
+db.connectDB();
 const app = express();
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
     res.write("HTML PAGE");
@@ -15,7 +17,9 @@ app.get("/", (req, res) => {
 
 app.use("/states", statesRouter);
 
-// Error handeling middleware
+app.use(express.urlencoded({ extended: false}));
+
+// Error handling middleware
 app.all('*',(req, res) => {
     res.status(404);
     if (req.accepts("html")) {

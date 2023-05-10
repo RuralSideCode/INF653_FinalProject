@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 
 const states = require('../model/states.json');
 
+const {getFunfact, postFunfact} = require("../model/funfacts");
+
 const checkCode = (req, res, next) => {
     const code = req.params.state;
     if (!states.find((s) => s.code == code)) {
@@ -43,10 +45,6 @@ router.get("/:state", checkCode, (req, res) => {
     res.end();
 });
 
-router.get("/:state/funfact", checkCode, (req, res) => {
-
-});
-
 router.get("/:state/capital", checkCode, (req, res) => {
     const code = req.params.state;
     const stateObject = states.find((s) => s.code == code);
@@ -77,6 +75,39 @@ router.get("/:state/admission", checkCode, (req, res) => {
 
     res.json({state: stateObject.state, admitted: stateObject.admission_date});
     res.end();
+});
+
+router.get("/:state/funfact", checkCode, async (req, res) => {
+    const stateCode = req.params.state;
+    const funfact = await getFunfact(stateCode);
+    const randIndex = Math.floor(Math.random() * funfact.funfacts.length);
+
+    res.json({funfact: funfact.funfacts[randIndex]});
+    res.end();
+});
+
+router.post("/:state/funfact", checkCode, async (req, res) => {
+    const stateCode = req.params.state;
+    console.log(req.body);
+    const funfacts = req.body.funfacts;
+    if (funfacts == undefined) {
+        res.status(400);
+        res.json({error: "No field called funfacts in body"});
+        res.end();
+        return;
+    }
+
+    console.log(await postFunfact(stateCode, funfacts));
+    res.status(200);
+    res.end();
+});
+
+router.patch("/:state/funfact", checkCode, (req, res) => {
+
+});
+
+router.delete("/:state/funfact", checkCode, (req, res) => {
+
 });
 
 module.exports = router;
