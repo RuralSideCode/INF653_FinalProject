@@ -17,8 +17,8 @@ app.get("/", (req, res) => {
     }
     else {
         res.status(404);
+        res.end();
     }
-    res.end(); 
 });
 
 app.use("/states", statesRouter);
@@ -35,8 +35,6 @@ app.all('*',(req, res) => {
     } else {
         res.type("txt").send("404 Not Found");
     }
-
-    res.end();
 });
 
 app.use((err, req, res, next) => {
