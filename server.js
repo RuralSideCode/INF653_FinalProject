@@ -11,7 +11,13 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.write("HTML PAGE");
+    if (req.accepts("html")) {
+        res.type("html");
+        res.sendFile(path.join(__dirname, "/views", "/index.html"));
+    }
+    else {
+        res.status(404);
+    }
     res.end(); 
 });
 

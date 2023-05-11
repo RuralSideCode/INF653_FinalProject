@@ -10,6 +10,7 @@ const checkCode = (req, res, next) => {
     if (!states.find((s) => s.code == code)) {
         console.log(`State "${code}" not found`);
         res.status(404);
+        res.json({message: "Invalid state abbreviation parameter"});
         res.end();
 
         return;
